@@ -25,12 +25,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/YOUR_USERNAME/node-openapi2mcp.git"
+    "url": "https://github.com/NNNNzs/openapi-to-mcp-server"
   },
   "bugs": {
-    "url": "https://github.com/YOUR_USERNAME/node-openapi2mcp/issues"
+    "url": "https://github.com/NNNNzs/openapi-to-mcp-server/issues"
   },
-  "homepage": "https://github.com/YOUR_USERNAME/node-openapi2mcp#readme",
+  "homepage": "https://github.com/NNNNzs/openapi-to-mcp-server#readme",
   "author": "",
   "license": "MIT",
   "dependencies": {
