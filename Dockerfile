@@ -2,7 +2,7 @@
 # 包含 Go 和 Node.js 环境
 
 # 第一阶段：构建 Go 工具
-FROM golang:1.21-alpine AS go-builder
+FROM golang:1.23-alpine AS go-builder
 
 # 设置工作目录
 WORKDIR /build

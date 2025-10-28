@@ -61,7 +61,7 @@ docker-compose down
 #### 前置要求
 
 - Node.js 18+ 
-- Go 1.21+
+- Go 1.23+
 
 #### 1. 安装依赖
 
@@ -167,7 +167,7 @@ docker run -d -p 3000:3000 --name openapi-mcp openapi-to-mcp-server
 ### 多阶段构建
 
 Dockerfile 使用多阶段构建：
-1. **第一阶段**：使用 `golang:1.21-alpine` 构建 Go 工具
+1. **第一阶段**：使用 `golang:1.23-alpine` 构建 Go 工具
 2. **第二阶段**：使用 `node:20-alpine` 作为运行时环境
 
 这样可以：

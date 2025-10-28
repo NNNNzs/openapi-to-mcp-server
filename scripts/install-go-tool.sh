@@ -8,7 +8,7 @@ echo "========================================"
 
 # 检查 Go
 if ! command -v go &> /dev/null; then
-    echo "错误: 未找到 Go，请先安装 Go 1.21 或更高版本"
+    echo "错误: 未找到 Go，请先安装 Go 1.23 或更高版本"
     echo ""
     echo "安装 Go:"
     echo "  macOS:   brew install go"
