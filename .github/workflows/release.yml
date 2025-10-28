@@ -1,0 +1,119 @@
+name: Release and Version Update
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '版本号 (例如: 1.0.0)'
+        required: true
+        type: string
+
+jobs:
+  update-version:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 配置 Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: 获取版本号
+        id: get_version
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            VERSION="${{ github.event.release.tag_name }}"
+            VERSION=${VERSION#v}
+          else
+            VERSION="${{ github.event.inputs.version }}"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "📦 版本号: $VERSION"
+
+      - name: 更新 package.json 版本
+        run: |
+          VERSION="${{ steps.get_version.outputs.version }}"
+          npm version $VERSION --no-git-tag-version
+          echo "✅ package.json 版本已更新为 $VERSION"
+
+      - name: 更新 CHANGELOG.md
+        run: |
+          VERSION="${{ steps.get_version.outputs.version }}"
+          DATE=$(date +%Y-%m-%d)
+          
+          # 创建新的变更日志条目
+          cat > /tmp/new_entry.md << EOF
+          ## [$VERSION] - $DATE
+
+          ### 发布说明
+          - 🚀 版本 $VERSION 发布
+          - 📝 通过 GitHub Release 自动更新
+
+          EOF
+          
+          # 在 CHANGELOG.md 中插入新条目（在第一个 ## 之前）
+          if [ -f CHANGELOG.md ]; then
+            sed -i.bak "/^## \[/r /tmp/new_entry.md" CHANGELOG.md && rm CHANGELOG.md.bak || true
+          fi
+          
+          echo "✅ CHANGELOG.md 已更新"
+
+      - name: 创建版本信息文件
+        run: |
+          VERSION="${{ steps.get_version.outputs.version }}"
+          DATE=$(date +%Y-%m-%d)
+          COMMIT_SHA=$(git rev-parse --short HEAD)
+          
+          mkdir -p public
+          cat > public/version.json << EOF
+          {
+            "version": "$VERSION",
+            "buildDate": "$DATE",
+            "commitSha": "$COMMIT_SHA",
+            "gitTag": "v$VERSION"
+          }
+          EOF
+          
+          echo "✅ 版本信息文件已创建"
+
+      - name: 提交版本更新
+        run: |
+          VERSION="${{ steps.get_version.outputs.version }}"
+          
+          git add package.json CHANGELOG.md public/version.json
+          
+          if git diff --staged --quiet; then
+            echo "⚠️ 没有需要提交的更改"
+          else
+            git commit -m "chore: bump version to $VERSION [skip ci]"
+            git push origin HEAD:main || git push origin HEAD:master
+            echo "✅ 版本更新已提交"
+          fi
+
+      - name: 生成发布说明
+        if: github.event_name == 'release'
+        run: |
+          VERSION="${{ steps.get_version.outputs.version }}"
+          echo "## 🎉 版本 $VERSION 已发布！" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📦 Docker 镜像" >> $GITHUB_STEP_SUMMARY
+          echo '```bash' >> $GITHUB_STEP_SUMMARY
+          echo "docker pull ${{ secrets.DOCKERHUB_USERNAME }}/openapi-to-mcp-server:$VERSION" >> $GITHUB_STEP_SUMMARY
+          echo "docker pull ${{ secrets.DOCKERHUB_USERNAME }}/openapi-to-mcp-server:latest" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
