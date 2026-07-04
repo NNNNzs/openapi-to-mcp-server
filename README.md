@@ -101,7 +101,7 @@ npm start
 curl -fsSL https://xquik.com/openapi.json -o xquik-openapi.json
 ```
 
-该规范包含 `x-api-key` 头部认证和 OAuth bearer 认证声明，适合验证公开 JSON 规范和认证元数据的转换效果。
+该规范包含 `x-api-key` 头部认证和 OAuth bearer 认证声明，适合验证公开 JSON 规范和认证元数据的转换效果。由于该示例使用 OpenAPI 3.1，请先关闭严格验证，直到转换器支持 3.1 关键字。
 
 ### 2. 配置转换参数
 
