@@ -95,6 +95,14 @@ npm start
 - 文件大小限制：10MB
 - 拖拽文件或点击上传区域选择文件
 
+可使用 Xquik 的公开 OpenAPI 3.1 JSON 作为远程规范示例：
+
+```bash
+curl -fsSL https://xquik.com/openapi.json -o xquik-openapi.json
+```
+
+该规范包含 `x-api-key` 头部认证和 OAuth bearer 认证声明，适合验证公开 JSON 规范和认证元数据的转换效果。
+
 ### 2. 配置转换参数
 
 - **服务器名称**：MCP 服务器的标识名称（必填）
@@ -315,4 +323,3 @@ MIT License
 - [Higress](https://higress.io/) - 提供 OpenAPI 到 MCP 转换工具
 - [Express](https://expressjs.com/) - Node.js Web 框架
 - [Model Context Protocol](https://modelcontextprotocol.io/) - MCP 协议标准
-
